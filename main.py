@@ -7,8 +7,7 @@ from types import SimpleNamespace
 if sys.platform == 'win32':
 	asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
      
-API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjEzZDlkZjZhLWNkNDItNDlhZi1hZDAyLTNhM2Q0OWEwM2Y5MSIsImlhdCI6MTc0MDg4MTU5OCwic3ViIjoiZGV2ZWxvcGVyLzFlZDBjODNhLTg2NTYtZWFlZC03ZjhjLTc2Y2RjNWI0YWJjZCIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiNzUuNzAuNC45NCJdLCJ0eXBlIjoiY2xpZW50In1dfQ.8u0q3JjhR1duwVuS3FKYVPRJhqgMI1pNdOxhxiYuphpTQiSvWd02rxqBEJ5bCn7-P6z-o1QATWj5XPsZ5g7NAA"
-
+API_KEY = ""
 
 class Brawl:
     BASE_URL = "https://api.brawlstars.com/v1"
@@ -117,8 +116,8 @@ class Brawl:
 brawl = Brawl(API_KEY)
 
 async def main():
-    player_tag = "#8R9Y0QVQC"
-    club_tag = "#2UYQ8J0LP"
+    player_tag = ""
+    club_tag = ""
     
     player_data = await brawl.player(player_tag)
     club_data = await brawl.club(club_tag)
