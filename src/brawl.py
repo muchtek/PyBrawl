@@ -4,11 +4,6 @@ import sys
 import json
 from types import SimpleNamespace
 
-if sys.platform == 'win32':
-	asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-     
-API_KEY = ""
-
 class Brawl:
     BASE_URL = "https://api.brawlstars.com/v1"
 
@@ -17,11 +12,14 @@ class Brawl:
         self.headers = {"Authorization": f"Bearer {self.token}"}
         self.session = None
 
-    # -- Confirm Session is Active --
+
+    # -- Ensure Session is Active --
     async def __ensure_session(self):
         if self.session is None or self.session.closed:
             self.session = aiohttp.ClientSession(headers=self.headers)
 
+
+    # -- Get Information Regarding a Player --
     async def player(self, player_tag: str):
         await self.__ensure_session()
 
@@ -35,7 +33,25 @@ class Brawl:
             else:
                 print(f"Error: {response.status}")
                 return await response.text()
-    
+
+       
+    # -- Get Information Regarding a Player's Recent Battles --
+    async def battle_log(self, player_tag: str):
+        await self.__ensure_session()
+
+        url = f"{self.BASE_URL}/players/%23{player_tag.strip('#')}/battlelog"
+
+        async with self.session.get(url, headers=self.headers) as response:
+            if response.status == 200:
+                data = await response.json()
+                player = json.loads(json.dumps(data), object_hook=lambda d: SimpleNamespace(**d))
+                return player
+            else:
+                print(f"Error: {response.status}")
+                return await response.text()
+
+
+    # -- Get Information Regarding a Club --
     async def club(self, club_tag: str):
         await self.__ensure_session()
 
@@ -49,7 +65,9 @@ class Brawl:
             else:
                 print(f"Error: {response.status}")
                 return await response.text()
-    
+
+
+    # -- Get Information Regarding Current Rotating Events --
     async def events(self):
         await self.__ensure_session()
 
@@ -64,11 +82,16 @@ class Brawl:
                 print(f"Error: {response.status}")
                 return await response.text()
 
-    async def player_rankings(self, country_code: str = "global"):
+
+    # -- Get Player Rankings --
+    async def player_rankings(self, country_code: str = "global", limit: int = None):
         await self.__ensure_session()
 
         url = f"{self.BASE_URL}/rankings/{country_code}/players"
 
+        if(limit):
+            url += f"?limit={limit}"
+
         async with self.session.get(url, headers=self.headers) as response:
             if response.status == 200:
                 data = await response.json()
@@ -77,12 +100,17 @@ class Brawl:
             else:
                 print(f"Error: {response.status}")
                 return await response.text()
-    
-    async def club_rankings(self, country_code: str = "global"):
+
+
+    # -- Get Club Rankings --
+    async def club_rankings(self, country_code: str = "global", limit: int = None):
         await self.__ensure_session()
 
         url = f"{self.BASE_URL}/rankings/{country_code}/clubs"
 
+        if(limit):
+            url += f"?limit={limit}"
+
         async with self.session.get(url, headers=self.headers) as response:
             if response.status == 200:
                 data = await response.json()
@@ -91,12 +119,39 @@ class Brawl:
             else:
                 print(f"Error: {response.status}")
                 return await response.text()
-            
-    async def brawler_rankings(self, brawler_id: str, country_code: str = "global"):
+
+
+    # -- Get Brawler Rankings --
+    async def brawler_rankings(self, brawler_id: str, country_code: str = "global", limit: int = None):
         await self.__ensure_session()
 
         url = f"{self.BASE_URL}/rankings/{country_code}/brawlers/{brawler_id}"  # Format player tag correctly
 
+        if(limit):
+            url += f"?limit={limit}"
+
+        async with self.session.get(url, headers=self.headers) as response:
+            if response.status == 200:
+                data = await response.json()
+                ranks = json.loads(json.dumps(data), object_hook=lambda d: SimpleNamespace(**d))
+                return ranks
+            else:
+                print(f"Error: {response.status}")
+                return await response.text()
+
+
+    # -- Get Brawlers as a List or Individuals --
+    async def brawlers(self, brawler_id: str = None, limit: int = None):
+        await self.__ensure_session()
+
+        url = f"{self.BASE_URL}/brawlers"
+
+        if(brawler_id):
+            url = f"{self.BASE_URL}/brawlers/{brawler_id}"
+
+        if(limit):
+            url += f"?limit={limit}"
+
         async with self.session.get(url, headers=self.headers) as response:
             if response.status == 200:
                 data = await response.json()
@@ -107,26 +162,6 @@ class Brawl:
                 return await response.text()
             
 
+    # -- Close the Session --
     async def close(self):
         await self.session.close()
-
-
-
-
-brawl = Brawl(API_KEY)
-
-async def main():
-    player_tag = ""
-    club_tag = ""
-    
-    player_data = await brawl.player(player_tag)
-    club_data = await brawl.club(club_tag)
-    events = await brawl.events()
-
-    print(player_data.name)
-    print(club_data.members[0].name)
-    print(events)
-    await brawl.close()
-
-# Run the async function
-asyncio.run(main())
