@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Brawl API Wrapper
 
 A simple asynchronous Python wrapper for the Brawl Stars API using `aiohttp`.
