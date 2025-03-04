@@ -114,4 +114,3 @@ my_player = brawl.player("#PLAYER_TAG")
 
 print(my_player.name) # Returns the player's name or errors if provided with an invalid tag.
 ```
->>>>>>> 5d61cf43692557d35f0d0d9bcf86f8e31be0d471
